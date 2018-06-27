@@ -16,5 +16,6 @@ To list all fonts in your system which can render the training text, run:
 text2image --text=training_text.txt --outputbase=eng --fonts_dir=/usr/share/fonts  --find_fonts --min_coverage=1.0 --render_per_font=false
 ```
 ## Note
-There are a lot of header files that this program depends on. My suggestion is to install all the libraries and build tesseract from source..
+There are a lot of header files that this program depends on. Please check in the cpp file.
+My suggestion is to install all the libraries and build tesseract from source...
 
