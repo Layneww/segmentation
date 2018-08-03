@@ -1,4 +1,8 @@
 # text2image
+dependencies
+- PIL
+
+
 how to run
 ```
 cd code
