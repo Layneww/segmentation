@@ -260,7 +260,7 @@ class picture:
                     #text = text[:len(text)//2] # half the textline
                     text = limitSentenceLength(text, len(text)//2)
                     next_left = cur_left + draw.textsize(font=fontobj, text=text+' ')[0]
-                    if iterations >=5: 
+                    if iterations >=10: 
                         break
                 text = text.strip() # strip extra spaces
                 if (iterations >= 5) or (len(prev_text+text) < 4): 
@@ -425,7 +425,7 @@ if __name__=='__main__':
     p.add_argument("--text_source", type=str, help="folder of the source txt, e.g. /data/DATA/")
     p.add_argument("--font_dir", nargs = '*', help="font directoriess separated by ' ', e.g. thafontsdir engfontsdir")
     p.add_argument("--output_folder", type=str, default='../dataset/', help="output dataset folder path, defualt: '../dataset/'")
-    p.add_argument("--num_instances", type=str, default=1, help="number of examples to generate")
+    p.add_argument("--num_instances", type=int, default=1, help="number of examples to generate")
     p.add_argument("--line_height", type=int, default=32, help="the height of one text line, default=32")
     p.add_argument("--pic_height", type=int, default=600, help="the height of the picture, default=600")
     p.add_argument("--font_size", type=int, default=20, help="the upper bound of font size, will be adjusted if the font height is higher than the height of line")
