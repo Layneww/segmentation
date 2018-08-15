@@ -336,10 +336,10 @@ class picture:
         
         
         child_line = {}
-        child_line_size = {}
-        child_line_size_width = {}
-        child_line_size_height = {}
-        child_line_size_depth = {}
+#        child_line_size = {}
+#        child_line_size_width = {}
+#        child_line_size_height = {}
+#        child_line_size_depth = {}
         
         child_line_bndbox = {}
         child_line_bndbox_xmin = {}
@@ -350,13 +350,23 @@ class picture:
 
         for j in range(len(self.segmentations)):
             child_line[j] = SubElement(top, 'line')
-            child_line_size[j] = SubElement(child_line[j], 'size')
-            child_line_size_width[j] = SubElement(child_line_size[j], 'width')
-            child_line_size_width[j].text = str(self.width)
-            child_line_size_height[j] = SubElement(child_line_size[j], 'height')
-            child_line_size_height[j].text = str(self.height)
-            child_line_size_depth[j] = SubElement(child_line_size[j], 'depth')
-            child_line_size_depth[j].text = str(depth)
+#            child_line_size[j] = SubElement(child_line[j], 'size')
+#            child_line_size_width[j] = SubElement(child_line_size[j], 'width')
+#            child_line_size_width[j].text = str(self.width)
+#            child_line_size_height[j] = SubElement(child_line_size[j], 'height')
+#            child_line_size_height[j].text = str(self.height)
+#            child_line_size_depth[j] = SubElement(child_line_size[j], 'depth')
+#            child_line_size_depth[j].text = str(depth)
+            
+            child_line_bndbox[j] = SubElement(child_line[j], 'bndbox')
+            child_line_bndbox_xmin[j] = SubElement(child_line_bndbox[j], 'xmin')
+            child_line_bndbox_xmin[j].text = str(self.lines[j]['xmin'])
+            child_line_bndbox_ymin[j] = SubElement(child_line_bndbox[j], 'ymin')
+            child_line_bndbox_ymin[j].text = str(self.lines[j]['ymin'])
+            child_line_bndbox_xmax[j] = SubElement(child_line_bndbox[j], 'xmax')
+            child_line_bndbox_xmax[j].text = str(self.lines[j]['xmax'])
+            child_line_bndbox_ymax[j] = SubElement(child_line_bndbox[j], 'ymax')
+            child_line_bndbox_ymax[j].text = str(self.lines[j]['ymax'])           
             
             child_object = {}
             child_object_language = {}

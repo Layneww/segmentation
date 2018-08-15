@@ -35,4 +35,3 @@ verdanab.ttf
 verdanai.ttf
 verdanaz.ttf
 webdings.ttf
-wingding.ttf
