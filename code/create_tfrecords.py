@@ -16,7 +16,7 @@ flags.DEFINE_string('image_dir', 'image', 'the path to the directory of all imag
 
 FLAGS = flags.FLAGS
 
-
+HEIGHT=32
 
 def df2list(xml_df):
     example_list = []
@@ -83,8 +83,8 @@ def create_tfrecord(tfrecords_filename, annotation_path, decoder_path, image_fol
                     'image/encoded': _bytes_feature(line_string),
                     'image/class': _int64_list_feature([decoder[x] for x in line['label']]),
                     'image/unpadded_class': _int64_list_feature([decoder[x] for x in line['label']]),
-                    'image/width': _int64_feature(crop_window[3]),
-                    'image/height': _int64_feature(crop_window[2]),
+                    'image/width': _int64_feature(int(HEIGHT/crop_window[2]*crop_window[3])),
+                    'image/height': _int64_feature(HEIGHT),
                     'image/text': _bytes_feature(tf.compat.as_bytes(''.join(line['label'])))
                 }))
         writer.write(example.SerializeToString()) 
@@ -103,6 +103,8 @@ def crop_jpeg_and_encode(image_path, crop_window):
     with tf.gfile.GFile(image_path, 'rb') as fid:
         encoded_jpg = fid.read()
     decoded_crop = tf.image.decode_and_crop_jpeg(encoded_jpg, crop_window=crop_window)
+    resize_crop = tf.image.resize_images(decoded_crop, size=[32, int(32/crop_window[2]*crop_window[3])], method=tf.image.ResizeMethod.BILINEAR)
+    decoded_crop = tf.cast(resize_crop, tf.uint8)
     encoded_crop = tf.image.encode_jpeg(decoded_crop, quality=100)
 #     print('crop_window', crop_window)
 #     with tf.Session() as sess:
