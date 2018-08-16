@@ -72,8 +72,6 @@ def create_tfrecord(tfrecords_filename, annotation_path, decoder_path, image_fol
         image_path = os.path.join(image_folder, str(line['image_name'])+'.jpg')
         crop_window = [line['ymin'], line['xmin'], line['height'], line['width']]
         line_encoded = crop_jpeg_and_encode(image_path, crop_window)
-        print('labels:', len(line['label']))
-        print('width:', line['width'])
         with tf.Session() as sess:
             line_string = line_encoded.eval()
         decoder = get_encoder(decoder_path)
