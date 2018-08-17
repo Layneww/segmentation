@@ -17,6 +17,7 @@ flags.DEFINE_string('image_dir', 'image', 'the path to the directory of all imag
 FLAGS = flags.FLAGS
 
 HEIGHT=32
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 def df2list(xml_df):
     example_list = []
