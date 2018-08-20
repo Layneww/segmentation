@@ -9,7 +9,7 @@ import pandas as pd
 
 
 flags = tf.app.flags
-flags.DEFINE_string('tfrecord', 'dataset.tfrecords', 'the path to the output tfrecord')
+flags.DEFINE_string('tfrecord', None, 'the path to the output tfrecord')
 flags.DEFINE_string('annotation', 'annotations.csv', 'the path to the annotation file')
 flags.DEFINE_string('decoder', 'decoder.txt', 'the path to the decoder file')
 flags.DEFINE_string('image_dir', 'image', 'the path to the directory of all images')
@@ -115,7 +115,10 @@ def crop_jpeg_and_encode(image_path, crop_window):
 
 def main():
     image_folder = FLAGS.image_dir
-    create_tfrecord(FLAGS.tfrecord, FLAGS.annotation, FLAGS.decoder, image_folder)
+    tfrecord = FLAGS.tfrecord
+    if FLAGS.tfrecord == None:
+        tfrecord = os.path.basename(FLAGS.annotation).split('.')[0]+'.tfrecords'
+    create_tfrecord(tfrecord, FLAGS.annotation, FLAGS.decoder, image_folder)
 
 
 if __name__ == '__main__':
