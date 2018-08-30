@@ -53,9 +53,12 @@ how to run
 
 ```
 cd code
-# for example, to create 1 image for tha+eng
+# for example, to create 1 image for tha+eng, as train set
 python3 generate_data.py --num_instances 1 --langs tha+eng --num_sentences 2+2 \
-      --text_source /data/DATA/ --font_dir ../thafonts ../engfonts
+      --text_source /data/DATA/ --font_dir ../thafonts ../engfonts --train train
+# for eval, similarly
+python3 generate_data.py --num_instances 1 --langs tha+eng --num_sentences 2+2 \
+      --text_source /data/DATA/ --font_dir ../thafonts ../engfonts --train eval
 ```
 You can find more information by `python3 generate_data.py -h`
 ```
@@ -80,11 +83,12 @@ You can find more information by `python3 generate_data.py -h`
   --font_size FONT_SIZE
                         the upper bound of font size, will be adjusted if the
                         font height is higher than the height of line
-  --train TRAIN         a boolean value tells if creating training data, default:
-                        True
+  --train TRAIN         choice between 'train' and 'eval', default:
+                        'train'
   --max_char MAX_CHAR   the max number of characters for language text taken from 
                         one sentence
 ```
+
 
 The text_source is the W2C dataset, the txt files are too large. You may find it in M40 under `/data/i351756/DATA`. You may also download partial text files from the release.
 
@@ -94,15 +98,22 @@ The code has only been tested for combinations of the following 3 languages Thai
 
 ### convert .xml to annotation files (with threads)
 ```
-python3 xml2csv.py --langs <languages>
+# for train set
+python3 xml2csv.py --langs <languages> --train True
+# for eval set
+python3 xml2csv.py --langs <languages> --train False
 ```
-You can specify the output folder, 
-default it will generate the `annotation.csv` and `decoder.txt` under `../dataset/<languages>/train/`.
+By default it will generate the `annotation.csv` and `decoder.txt` under `../dataset/<languages>/train/`.
 
 ### a template to create customized tfrecords
 ```
 python3 create_tfrecords.py --tfrecord <output tfrecord full path> --annotation <annotation.csv full path> --decoder <decoder.txt full path> --image_dir <image folder>
+
+# for example
+python3 create_tfrecords.py --tfrecord test.tfrecords --annotation ../dataset/tha+eng/train/annotations/annotation_1000.csv --decoder ../dataset/tha+eng/train/decoder.txt --image_dir ../dataset/tha+eng/train/image
 ```
+if not specified name of the tfrecord, the default tfrecords path is the basename of annotation with an extension .tfrecords. For example, in the above example, the default tfrecords path would be `annotation_1000.tfrecords`.
+
 This template uses the same feature format as the French street model dataset [this paper](https://arxiv.org/abs/1702.03970) describes.
 
 ## other functions
