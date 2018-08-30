@@ -14,7 +14,7 @@ The code has been mainly referred to the [STREET model](https://github.com/mldba
 * [Installing and setting up the segmentation model](#installing-and-setting-up-the-segmentation-model)
 * [Create dataset](#create-dataset)
 * [Training a full model with evaluation](#training-a-full-model-with-evaluation)
-* [Inference on pixel level based (No visualization currently)](#inference-on-pixel-level-based-(No-visualization-currently))
+* [Inference on pixel level based (No visualization currently)](#inference-on-pixel-level-based-(no-visualization-currently))
 * [The Variable Graph Specification Language](#the-variable-graph-specification-language)
 
 ## Introduction
