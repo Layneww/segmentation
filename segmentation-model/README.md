@@ -1,4 +1,4 @@
-# Multilingual Sequence Model.
+# Multilingual Segmentation Model.
 
 Refer to 
 A TensorFlow implementation of the STREET model described in the paper:
@@ -11,7 +11,7 @@ The code has been mainly referred to the [STREET model](https://github.com/mldba
 
 ## Contents
 * [Introduction](#introduction)
-* [Installing and setting up the sequence model](#installing-and-setting-up-the-street-model)
+* [Installing and setting up the segmentation model](#installing-and-setting-up-the-segmentation-model)
 * [Create dataset](#create-dataset)
 * [Training a full model with evaluation](#training-a-full-model-with-evaluation)
 * [Inference and Comparison with Tesseract performance](#inference-and-omparison-with-tesseract-performance)
@@ -22,7 +22,7 @@ The code has been mainly referred to the [STREET model](https://github.com/mldba
 The model trains both Thai and English in one charset. The input is an textline image, and the output is a sequence of text.
 
 
-## Installing and setting up the sequence model
+## Installing and setting up the segmentation model
 
 ### Build from docker file. 
 Create docker image from docerfile folder.
@@ -72,79 +72,30 @@ python3 vgsl_model_test.py
 ```
 
 ## Create dataset
-
-### Create text files
-You can other download the text files from the release or create own customised text files.
-#### Download from the release
-10k text files. One txt contains 4 snetences, 2 from English and Thai each. Each sentence is no more than 100 characters.
-Put the upzipped dataset folder under the main diretory of this project.
-#### Generate own text files 
-To create the similar text files described above, 
-```
-cd python
-mkdir ../dataset
-python3 getText.py -d DATA_PATH tha+eng 2+2 10000
-```
-```DATA_PATH``` is the path of the corpus data e.g. W2C. Get more information using ```-h``` flag.
-
-Files are created like
-```
-dataset/
-  tha+eng/
-    tha+eng.count.txt
-    txt/
-      0.txt
-      1.txt
-      ...
-```
-#### Generate Tif/box files from the text file
-Basic operation: ```python3 getTifBox.py [--fonts_dir FONTS_DIR] [--input_dir INPUT_DIR] langs txt font```
-e.g. ```python3 getTifBox.py --fonts_dir ../thafonts tha+eng 0.txt Garuda```
-Use parallel program to speed up the generation. (please first install GNU parallel by ```apt-get install parallel```)
-```
-files=`ls ..dataset/tha+eng/txt/*`
-fonts_dir=../thafonts
-parallel -j40 python3 getTifBox.py --fonts_dir $fonts_dir tha+eng ::: `basename -a $files` ::: `cat $fonts_dir/tha.fontlist.txt`
-```
-The box/tif files will be put in ```dataset/tha+eng/boxtif/```
-
-#### Generate tfrecords
-Basic operation: ```python3 create_tfrecords.py [--data_dir DATA_DIR]
-                           [--output_dir OUTPUT_DIR] [--langs LANGS]
-                           box_path {train,eval}```
-e.g. ```python3 create_tfrecords.py --langs tha+eng
-                           ../dataset/tha+eng/boxtif/0-Garuda.box train```
-It will also create the decoder file whose path is ```dataset/tha+eng/charset_size=225.txt```
-Use parallel prgram, 
-firstly, write 2 txt files called `train.txt` `eval.txt` in `tha+eng` directory, including the full path of box files in each trainset and evalset.
-
-```
-cat ../dataset/tha+eng/train.txt | parallel -j40 create_tfrecords.py --langs tha+eng {} train
-cat ../dataset/tha+eng/eval.txt | parallel -j40 create_tfrecords.py --langs tha+eng {} eval
-```
-
-The tfrecords will be put in ```dataset/tha+eng/tfrecords/```, consisting of 2 subfolder `train/` and `eval/`.
+Please refer to [text2image](../text2image/README.md)
 
 ## Training a full model with evaluation
+The model structure is still under investigation.
+Take tha+eng as an example.
 ```
 cd python
+# store model in 'model/' folder under 'segmentation-model/' direcotry
 train_dir=../model
 # rm -rf $train_dir  # uncomment this if want to retrain the whole model
-CUDA_VISIBLE_DEVICES="0" python3 vgsl_train.py -model_str='1,60,0,1[Ct5,5,16 Mp3,3 Lfys64 Lfx128 Lrx128 Lfx256]O1c225' --train_data=../dataset/tha+eng/tfrecords/train/* --train_dir=$train_dir --max_steps=1000000 &
-CUDA_VISIBLE_DEVICES="" python3 vgsl_eval.py --model_str='1,60,0,1[Ct5,5,16 Mp3,3 Lfys64 Lfx128 Lrx128 Lfx256]O1c225' --num_steps=1000 --eval_data=../dataset/tha+eng/tfrecords/eval/*  --decoder=../dataset/tha+eng/charset_size=225.txt --eval_interval_secs=300 --train_dir=$train_dir --eval_dir=$train_dir/eval &
+CUDA_VISIBLE_DEVICES="0" python3 vgsl_train.py -model_str='1,32,0,1[Ct5,5,16 Mp3,3 Ct5,5,32 Mp3,3 DeCt5,5,32,3 DeCt3,3,16,3 Bl Lfys64 Lfx96 Lrx96 Lbx128]O1s3' --train_data=../dataset/tha+eng/train/tfrecords/* --train_dir=$train_dir --max_steps=1000000 &
+CUDA_VISIBLE_DEVICES="" python3 vgsl_eval.py --model_str='1,32,0,1[Ct5,5,16 Mp3,3 Ct5,5,32 Mp3,3 DeCt5,5,32,3 DeCt3,3,16,3 Bl Lfys64 Lfx96 Lrx96 Lbx128]O1s3' --num_steps=1000 --eval_data=../dataset/tha+eng/eval/tfrecords/*  --decoder=../dataset/tha+eng/train/decoder.txt --eval_interval_secs=300 --train_dir=$train_dir --eval_dir=$train_dir/eval &
 tensorboard --logdir=$train_dir
 ```
 
-## Inference and Comparison with Tesseract performance
-To test the sequence model. Suppose we have an image called `test.png` mixed with thai and english,
-get the OCR result
+## Inference on pixel level based (No visualization currently)
+To test the segmentation model. Suppose we have an image called `test.png` mixed with thai and english,
+get the segmentation result on pixel
 ```
 export PYTHONIOENCODING=UTF-8
 train_dir=../model
-python3 inference.py --train_dir=$train_dir --model_str='1,60,0,1[Ct5,5,16 Mp3,3 Lfys64 Lfx128 Lrx128 Lfx256]O1c225'
-                    --image=test.png --decoder=../dataset/tha+eng/charset_size=225.txt
+python3 inference.py --train_dir=$train_dir --model_str='1,32,0,1[Ct5,5,16 Mp3,3 Ct5,5,32 Mp3,3 DeCt5,5,32,3 DeCt3,3,16,3 Bl Lfys64 Lfx96 Lrx96 Lbx128]O1s3' --image=test.png --decoder=../dataset/tha+eng/train/decoder.txt
 ```
-The output will first print how many lines it finds during the preprocessing, and output the OCR result.
+The output will first print how many lines it finds during the preprocessing, and output the segmentation result.
 
 ## The Variable Graph Specification Language
 Please see https://github.com/mldbai/tensorflow-models/blob/master/street/g3doc/vgslspecs.md for more details.
