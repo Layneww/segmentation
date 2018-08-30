@@ -450,7 +450,7 @@ if __name__=='__main__':
     p.add_argument("--pic_height", type=int, default=600, help="the height of the picture, default=600")
     p.add_argument("--pic_width", type=int, default=1000, help="the width of the picture, default=1000")
     p.add_argument("--font_size", type=int, default=20, help="the upper bound of font size, will be adjusted if the font height is higher than the height of line")
-    p.add_argument("--train", type=str, choices=['train', 'eval'], default='train', help="a boolean value tells if it is training data, default: False")
+    p.add_argument("--train", type=str, choices=['train', 'eval'], default='train', help="choice between 'train' and 'eval', which tells if it is training data, default: 'train'")
     p.add_argument("--max_char", type=int, default=40, help="the max number of characters for one piece of language text")
     args = p.parse_args()
     try:
