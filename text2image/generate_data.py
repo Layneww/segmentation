@@ -102,9 +102,17 @@ class picture:
         num_sentences: e.g. 2+2
         text_soure: raw text source, e.g. /data/DATA/
         font_source: a list, e.g. ['fontdir1/a.ttf', 'fontdir2/b.ttf]
-        width: width of the line
+        width: width of the image
         height: height of the line
+        total_height: height of the image
+        intervel: distance between the adjacent lines
+        padding: size of indentation from left
+        min_num_lines: minimum number of lines in image (max number is dependent on total_height)
         max_char: maximum character for one piece
+        font_size: maximum font size to consider, also bounded by the height of line
+        output_dir: directory of the output dataset
+        train: string that describes if it is train/eval
+        database: name of the database source
     '''
 
     def __init__(self, langs, num_sentences, 
@@ -410,6 +418,7 @@ def main(num_ins,
          num_sentences, 
          height, 
          total_height,
+         width,
          font_size, 
          train, 
          text_source, 
@@ -423,7 +432,7 @@ def main(num_ins,
         font_choice = [random.choice(x) for x in fonts_list]
         pic = picture(langs=langs,num_sentences=num_sentences, text_source=text_source,font_source=font_choice, 
                       image_name='{}.png'.format(i), font_size=font_size, output_dir=output_folder, 
-                      height=height, total_height=total_height, train=train, max_char=max_char)
+                      height=height, width=width, total_height=total_height, train=train, max_char=max_char)
         pic.create_xml(os.path.join(output_folder,'{}/{}/xml/{}.xml'.format(langs, train, i)))
     
 
@@ -438,6 +447,7 @@ if __name__=='__main__':
     p.add_argument("--num_instances", type=int, default=1, help="number of examples to generate")
     p.add_argument("--line_height", type=int, default=32, help="the height of one text line, default=32")
     p.add_argument("--pic_height", type=int, default=600, help="the height of the picture, default=600")
+    p.add_argument("--pic_width", type=int, default=1000, help="the width of the picture, default=1000")
     p.add_argument("--font_size", type=int, default=20, help="the upper bound of font size, will be adjusted if the font height is higher than the height of line")
     p.add_argument("--train", type=bool, default=True, help="a boolean value tells if it is training data, default: True")
     p.add_argument("--max_char", type=int, default=40, help="the max number of characters for one piece of language text")
@@ -452,6 +462,7 @@ if __name__=='__main__':
          num_sentences,
          args.line_height,
          args.pic_height,
+         args.pic_width,
          args.font_size,
          train,
          args.text_source,
