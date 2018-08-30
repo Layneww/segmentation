@@ -103,7 +103,21 @@ python3 xml2csv.py --langs <languages> --train True
 # for eval set
 python3 xml2csv.py --langs <languages> --train False
 ```
-By default it will generate the `annotation.csv` and `decoder.txt` under `../dataset/<languages>/train/`.
+
+By default it creates annotation files for every 1000 lines, which are named as `annotation_1000.csv`, `annotation_2000.csv`. 
+Suppose there are in total 1500 lines for all the images in the image folder, the code will generate 2 files: `annotation_1000.csv` and `annotation_1500.csv`.
+```
+# customize the number of lines included in one annotation file
+python3 xml2csv.py --langs <languages> --train True --size 2000
+```
+By default it will also generate `decoder.txt` under `../dataset/<languages>/train/`.
+Each line of `decoder.txt` is in the format of `<lang>\t<code>\n`, for example
+```
+<null>  0
+tha 1
+eng 2
+```
+The <null> refers to the label in between the tha and eng language segments.
 
 ### a template to create customized tfrecords
 ```
