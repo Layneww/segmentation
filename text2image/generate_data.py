@@ -4,6 +4,7 @@ from PIL import ImageDraw
 from PIL import ImageFont
 from PIL import Image
 import os
+import sys
 import linecache
 import glob
 
@@ -449,14 +450,16 @@ if __name__=='__main__':
     p.add_argument("--pic_height", type=int, default=600, help="the height of the picture, default=600")
     p.add_argument("--pic_width", type=int, default=1000, help="the width of the picture, default=1000")
     p.add_argument("--font_size", type=int, default=20, help="the upper bound of font size, will be adjusted if the font height is higher than the height of line")
-    p.add_argument("--train", type=bool, default=True, help="a boolean value tells if it is training data, default: True")
+    p.add_argument("--train", type=str, choices=['train', 'eval'], default='train', help="a boolean value tells if it is training data, default: False")
     p.add_argument("--max_char", type=int, default=40, help="the max number of characters for one piece of language text")
     args = p.parse_args()
-    train = 'train'
-    if not args.train:
-        train = 'eval'
-    num_sentences = [int(x) for x in args.num_sentences.split('+')]
-    fonts_dir = args.font_dir#[x for x in args.font_dir.split()]
+    try:
+        num_sentences = [int(x) for x in args.num_sentences.split('+')]
+    except:
+        sys.exit('invalid input to --num_sentences, must be string of numbers separated by +, e.g. 1+1')
+    fonts_dir = args.font_dir
+    if len(fonts_dir) != len(num_sentences):
+        sys.exit('input fonts and languages not matched')
     main(args.num_instances,
          args.langs, args.output_folder,
          num_sentences,
